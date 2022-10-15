@@ -1,72 +1,81 @@
-import { nanoid } from "nanoid";
-import { Component } from "react";
-import PropTypes from "prop-types";
-import { Form, FormButton, Label } from "./ContactForm.styled";
+import { nanoid } from 'nanoid';
+import { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Form, FormButton, Label } from './ContactForm.styled';
 
-const INITIAL_STATE = {
+const nameCheckMessage =
+  "Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan";
+const telCheckMessage =
+  'Phone number must be digits and can contain spaces, dashes, parentheses and can start with +';
+
+export class ContactForm extends Component {
+  state = {
     name: '',
     number: '',
-}
+  };
 
-const nameCheckMessage = "Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan";
-const telCheckMessage = "Phone number must be digits and can contain spaces, dashes, parentheses and can start with +";
+  static propTypes = {
+    updateContactList: PropTypes.func.isRequired,
+    contactList: PropTypes.arrayOf(PropTypes.object).isRequired,
+  };
 
-export class ContactForm extends Component{
-    state = {
-    ...INITIAL_STATE
+  handleInput = e => {
+    const { name, value } = e.target;
+    this.setState({ [name]: value });
+  };
+
+  addContact = e => {
+    e.preventDefault();
+    const {
+      state,
+      props: { contactList, updateContactList },
+    } = this;
+
+    if (
+      contactList.some(
+        contact => contact.name.toLowerCase() === state.name.toLowerCase()
+      )
+    ) {
+      alert(`${state.name} is already in contacts`);
+      return;
     }
 
-    static propTypes = {
-        updateContactList: PropTypes.func.isRequired,
-        contactList: PropTypes.arrayOf(PropTypes.object).isRequired
-    }
+    const newContact = {
+      id: nanoid(),
+      ...state,
+    };
 
-    handleInput = (e) => {
-        const { name, value } = e.target;
-        this.setState({[name]: value})
-    }
+    updateContactList(newContact);
 
-    addContact = (e) => {
-        e.preventDefault();
-        const { state, props: { contactList, updateContactList } } = this;
+    this.reset();
+  };
 
-        if (contactList.some(contact => contact.name.toLowerCase() === state.name.toLowerCase())) {
-            alert(`${state.name} is already in contacts`);
-            return;
-        }
+  reset() {
+    this.setState({ name: '', number: '' });
+  }
 
-        const newContact = {
-            id: nanoid(),
-            ...state,
-        }
-
-        updateContactList(newContact);
-
-        this.reset();
-    }
-
-    reset() {
-        this.setState({ ...INITIAL_STATE });
-    }
-
-    render() {
-        const { state: { name, number }, handleInput, addContact } = this;
-        return (
-        <Form onSubmit={addContact}>
+  render() {
+    const {
+      state: { name, number },
+      handleInput,
+      addContact,
+    } = this;
+    return (
+      <Form onSubmit={addContact}>
         <Label>
-            Name
+          Name
           <input
-          onChange={handleInput}
-          type="text"
-          name="name"
-          value={name}
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title={nameCheckMessage}
-          required
+            onChange={handleInput}
+            type="text"
+            name="name"
+            value={name}
+            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+            title={nameCheckMessage}
+            required
           />
         </Label>
         <Label>
-            Number
+          Number
           <input
             onChange={handleInput}
             type="tel"
@@ -77,8 +86,8 @@ export class ContactForm extends Component{
             required
           />
         </Label>
-          <FormButton type="submit">Add contact</FormButton>
-        </Form>
-        )
-    }
+        <FormButton type="submit">Add contact</FormButton>
+      </Form>
+    );
+  }
 }

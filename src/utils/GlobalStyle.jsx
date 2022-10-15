@@ -9,7 +9,7 @@ const GlobalStyle = createGlobalStyle`
 
 body{
   font-family: 'Roboto', sans-serif;
-  background-color: ${p=>p.theme.colors.pink};
+  background-color: ${p => p.theme.colors.pink};
 }
 
 ul{
