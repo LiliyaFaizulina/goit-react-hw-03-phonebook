@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, FormButton, Label } from './ContactForm.styled';
@@ -16,7 +15,6 @@ export class ContactForm extends Component {
 
   static propTypes = {
     updateContactList: PropTypes.func.isRequired,
-    contactList: PropTypes.arrayOf(PropTypes.object).isRequired,
   };
 
   handleInput = e => {
@@ -24,29 +22,10 @@ export class ContactForm extends Component {
     this.setState({ [name]: value });
   };
 
-  addContact = e => {
+  handleSubmit = e => {
     e.preventDefault();
-    const {
-      state,
-      props: { contactList, updateContactList },
-    } = this;
-
-    if (
-      contactList.some(
-        contact => contact.name.toLowerCase() === state.name.toLowerCase()
-      )
-    ) {
-      alert(`${state.name} is already in contacts`);
-      return;
-    }
-
-    const newContact = {
-      id: nanoid(),
-      ...state,
-    };
-
-    updateContactList(newContact);
-
+    const { updateContactList } = this.props;
+    updateContactList(this.state);
     this.reset();
   };
 
@@ -58,10 +37,10 @@ export class ContactForm extends Component {
     const {
       state: { name, number },
       handleInput,
-      addContact,
+      handleSubmit,
     } = this;
     return (
-      <Form onSubmit={addContact}>
+      <Form onSubmit={handleSubmit}>
         <Label>
           Name
           <input

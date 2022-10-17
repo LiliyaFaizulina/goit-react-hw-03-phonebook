@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { nanoid } from 'nanoid';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { SearchFilter } from './SearchFilter/SearchFilter';
@@ -13,8 +14,21 @@ export class App extends Component {
   };
 
   updateContactList = newContact => {
+    const { contacts } = this.state;
+    const newName = newContact.name.toLowerCase();
+
+    if (contacts.some(contact => contact.name.toLowerCase() === newName)) {
+      alert(`${newContact.name} is already in contacts`);
+      return;
+    }
+
+    const contact = {
+      id: nanoid(),
+      ...newContact,
+    };
+
     this.setState(prevState => ({
-      contacts: [newContact, ...prevState.contacts],
+      contacts: [contact, ...prevState.contacts],
     }));
   };
 
